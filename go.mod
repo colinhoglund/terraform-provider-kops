@@ -97,7 +97,7 @@ require (
 	k8s.io/apiextensions-apiserver v0.0.0-20180412193505-4347b330d0ff // indirect
 	k8s.io/apimachinery v0.0.0-20180228050457-302974c03f7e // git tag "kubernetes-1.10.1"
 	k8s.io/apiserver v0.0.0-20180412185015-06e4be4fafa2 // indirect
-	k8s.io/client-go v7.0.0+incompatible
+	k8s.io/client-go v7.0.0+incompatible // indirect
 	k8s.io/kops v1.10.0
 	k8s.io/kube-openapi v0.0.0-20180731170545-e3762e86a74c // indirect
 	k8s.io/kubernetes v1.10.1 // indirect
