@@ -60,35 +60,54 @@ func setResourceData(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
-	d.Set("channel", cluster.Spec.Channel)
-	d.Set("cloud_provider", cluster.Spec.CloudProvider)
-	d.Set("cluster_dnsdomain", cluster.Spec.ClusterDNSDomain)
-	d.Set("config_base", cluster.Spec.ConfigBase)
-	d.Set("config_store", cluster.Spec.ConfigStore)
-	d.Set("creation_timestamp", cluster.ObjectMeta.CreationTimestamp.String())
-	d.Set("dnszone", cluster.Spec.DNSZone)
-	d.Set("key_store", cluster.Spec.KeyStore)
-	d.Set("kubernetes_version", cluster.Spec.KubernetesVersion)
-	d.Set("master_internal_name", cluster.Spec.MasterInternalName)
-	d.Set("master_public_name", cluster.Spec.MasterPublicName)
-	d.Set("name", cluster.ObjectMeta.Name)
-	d.Set("network_cidr", cluster.Spec.NetworkCIDR)
-	d.Set("network_id", cluster.Spec.NetworkID)
-	d.Set("non_masquerade_cidr", cluster.Spec.NonMasqueradeCIDR)
-	d.Set("project", cluster.Spec.Project)
-	d.Set("secret_store", cluster.Spec.SecretStore)
-	d.Set("service_cluster_iprange", cluster.Spec.ServiceClusterIPRange)
-	d.Set("sshkey_name", cluster.Spec.SSHKeyName)
-
-	// set subnets
-	d.Set("subnet", flattenSubnet(cluster.Spec.Subnets))
+	if err := d.Set("metadata", flattenMetadata(cluster)); err != nil {
+		return err
+	}
+	if err := d.Set("spec", flattenSpec(cluster)); err != nil {
+		return err
+	}
 	return nil
 }
 
-func flattenSubnet(subnets []kopsapi.ClusterSubnetSpec) []map[string]string {
-	var out []map[string]string
+func flattenSpec(cluster *kopsapi.Cluster) []map[string]interface{} {
+	spec := make(map[string]interface{})
+
+	spec["channel"] = cluster.Spec.Channel
+	spec["cloud_provider"] = cluster.Spec.CloudProvider
+	spec["cluster_dnsdomain"] = cluster.Spec.ClusterDNSDomain
+	spec["config_base"] = cluster.Spec.ConfigBase
+	spec["config_store"] = cluster.Spec.ConfigStore
+	spec["dnszone"] = cluster.Spec.DNSZone
+	spec["key_store"] = cluster.Spec.KeyStore
+	spec["kubernetes_version"] = cluster.Spec.KubernetesVersion
+	spec["master_internal_name"] = cluster.Spec.MasterInternalName
+	spec["master_public_name"] = cluster.Spec.MasterPublicName
+	spec["network_cidr"] = cluster.Spec.NetworkCIDR
+	spec["network_id"] = cluster.Spec.NetworkID
+	spec["non_masquerade_cidr"] = cluster.Spec.NonMasqueradeCIDR
+	spec["project"] = cluster.Spec.Project
+	spec["secret_store"] = cluster.Spec.SecretStore
+	spec["service_cluster_iprange"] = cluster.Spec.ServiceClusterIPRange
+	spec["sshkey_name"] = cluster.Spec.SSHKeyName
+	spec["subnet"] = flattenSubnet(cluster.Spec.Subnets)
+	spec["topology"] = flattenTopology(cluster.Spec.Topology)
+
+	return []map[string]interface{}{spec}
+}
+
+func flattenMetadata(cluster *kopsapi.Cluster) []map[string]interface{} {
+	meta := make(map[string]interface{})
+
+	meta["name"] = cluster.ObjectMeta.Name
+	meta["creation_timestamp"] = cluster.ObjectMeta.CreationTimestamp.String()
+
+	return []map[string]interface{}{meta}
+}
+
+func flattenSubnet(subnets []kopsapi.ClusterSubnetSpec) []map[string]interface{} {
+	var out []map[string]interface{}
 	for _, subnet := range subnets {
-		out = append(out, map[string]string{
+		out = append(out, map[string]interface{}{
 			"name": subnet.Name,
 			"cidr": subnet.CIDR,
 			"zone": subnet.Zone,
@@ -96,4 +115,26 @@ func flattenSubnet(subnets []kopsapi.ClusterSubnetSpec) []map[string]string {
 		})
 	}
 	return out
+}
+
+func flattenTopology(topology *kopsapi.TopologySpec) []map[string]interface{} {
+	out := make(map[string]interface{})
+
+	out["masters"] = topology.Masters
+	out["nodes"] = topology.Nodes
+	if topology.Bastion != nil {
+		out["bastion"] = []map[string]interface{}{
+			map[string]interface{}{
+				"bastion_public_name":  topology.Bastion.BastionPublicName,
+				"idle_timeout_seconds": topology.Bastion.IdleTimeoutSeconds,
+			},
+		}
+	}
+	out["dns"] = []map[string]interface{}{
+		map[string]interface{}{
+			"type": topology.DNS.Type,
+		},
+	}
+
+	return []map[string]interface{}{out}
 }
