@@ -91,6 +91,9 @@ func flattenSpec(cluster *kopsapi.Cluster) []map[string]interface{} {
 	spec["sshkey_name"] = cluster.Spec.SSHKeyName
 	spec["subnet"] = flattenSubnet(cluster.Spec.Subnets)
 	spec["topology"] = flattenTopology(cluster.Spec.Topology)
+	spec["ssh_access"] = cluster.Spec.SSHAccess
+	spec["kubernetes_api_access"] = cluster.Spec.KubernetesAPIAccess
+	spec["additional_policies"] = *cluster.Spec.AdditionalPolicies
 
 	return []map[string]interface{}{spec}
 }

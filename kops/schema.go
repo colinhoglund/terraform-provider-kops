@@ -43,6 +43,9 @@ func clusterSchema() map[string]*schema.Schema {
 					"sshkey_name":             schemaStringOptional(),
 					"subnet":                  schemaSubnet(),
 					"topology":                schemaTopology(),
+					"ssh_access":              schemaStringSliceOptional(),
+					"kubernetes_api_access":   schemaStringSliceOptional(),
+					"additional_policies":     schemaStringMap(),
 				},
 			},
 		},
@@ -82,6 +85,21 @@ func schemaCIDRStringOptional() *schema.Schema {
 func schemaIntOptional() *schema.Schema {
 	return &schema.Schema{
 		Type:     schema.TypeInt,
+		Optional: true,
+	}
+}
+
+func schemaStringSliceOptional() *schema.Schema {
+	return &schema.Schema{
+		Type:     schema.TypeList,
+		Optional: true,
+		Elem:     &schema.Schema{Type: schema.TypeString},
+	}
+}
+
+func schemaStringMap() *schema.Schema {
+	return &schema.Schema{
+		Type:     schema.TypeMap,
 		Optional: true,
 	}
 }
