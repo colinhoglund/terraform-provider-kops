@@ -118,27 +118,27 @@ func schemaClusterEtcdCluster() *schema.Schema {
 				"enable_tls_auth":         schemaBoolOptional(),
 				"leader_election_timeout": schemaIntOptional(),
 				"heartbeat_interval":      schemaIntOptional(),
-				//"backups": {
-				//	Type:     schema.TypeList,
-				//	Optional: true,
-				//	MaxItems: 1,
-				//	Elem: &schema.Resource{
-				//		Schema: map[string]*schema.Schema{
-				//			"store": schemaStringOptional(),
-				//			"image": schemaStringOptional(),
-				//		},
-				//	},
-				//},
-				//"manager": {
-				//	Type:     schema.TypeList,
-				//	Optional: true,
-				//	MaxItems: 1,
-				//	Elem: &schema.Resource{
-				//		Schema: map[string]*schema.Schema{
-				//			"image": schemaStringOptional(),
-				//		},
-				//	},
-				//},
+				"backups": {
+					Type:     schema.TypeList,
+					Optional: true,
+					MaxItems: 1,
+					Elem: &schema.Resource{
+						Schema: map[string]*schema.Schema{
+							"backup_store": schemaStringOptional(),
+							"image":        schemaStringOptional(),
+						},
+					},
+				},
+				"manager": {
+					Type:     schema.TypeList,
+					Optional: true,
+					MaxItems: 1,
+					Elem: &schema.Resource{
+						Schema: map[string]*schema.Schema{
+							"image": schemaStringOptional(),
+						},
+					},
+				},
 			},
 		},
 	}

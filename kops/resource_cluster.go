@@ -192,17 +192,21 @@ func resourceDataClusterEtcdCluster(etcdClusters []*kopsapi.EtcdClusterSpec) []m
 			cl["heartbeat_interval"] = cluster.HeartbeatInterval
 		}
 		cl["image"] = cluster.Image
-		//cl["backups"] = []map[string]interface{}{
-		//	map[string]interface{}{
-		//		"store": cluster.Backups.BackupStore,
-		//		"image": cluster.Backups.Image,
-		//	},
-		//}
-		//cl["manager"] = []map[string]interface{}{
-		//	map[string]interface{}{
-		//		"image": cluster.Manager.Image,
-		//	},
-		//}
+		if cluster.Backups != nil {
+			cl["backups"] = []map[string]interface{}{
+				map[string]interface{}{
+					"backup_store": cluster.Backups.BackupStore,
+					"image":        cluster.Backups.Image,
+				},
+			}
+		}
+		if cluster.Manager != nil {
+			cl["manager"] = []map[string]interface{}{
+				map[string]interface{}{
+					"image": cluster.Manager.Image,
+				},
+			}
+		}
 
 		data = append(data, cl)
 	}
