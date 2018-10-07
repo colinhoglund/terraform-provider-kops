@@ -46,10 +46,10 @@ func schemaClusterSubnet() *schema.Schema {
 		Computed: true,
 		Elem: &schema.Resource{
 			Schema: map[string]*schema.Schema{
-				"cidr": schemaCIDRStringRequired(),
 				"name": schemaStringRequired(),
-				"type": schemaStringInSliceRequired([]string{"Public", "Private", "Utility"}),
 				"zone": schemaStringRequired(),
+				"cidr": schemaCIDRStringRequired(),
+				"type": schemaStringInSliceRequired([]string{"Public", "Private", "Utility"}),
 			},
 		},
 	}
@@ -97,11 +97,7 @@ func schemaClusterEtcdCluster() *schema.Schema {
 		Elem: &schema.Resource{
 			Schema: map[string]*schema.Schema{
 				"name": schemaStringRequired(),
-				//"provider": {
-				//	Type:         schema.TypeString,
-				//	Optional:     true,
-				//	ValidateFunc: validation.StringInSlice([]string{"Manager", "Legacy"}, false),
-				//},
+				//"provider": schemaStringInSliceOptional([]string{"Manager", "Legacy"}),
 				"etcd_member": {
 					Type: schema.TypeList, Required: true,
 					Elem: &schema.Resource{
@@ -109,19 +105,19 @@ func schemaClusterEtcdCluster() *schema.Schema {
 							"name":             schemaStringRequired(),
 							"instance_group":   schemaStringRequired(),
 							"volume_type":      schemaStringOptional(),
+							"kms_key_id":       schemaStringOptional(),
 							"volume_iops":      schemaIntOptional(),
 							"volume_size":      schemaIntOptional(),
-							"kms_key_id":       schemaStringOptional(),
 							"encrypted_volume": schemaBoolOptional(),
 						},
 					},
 				},
+				"version":                 schemaStringOptional(),
+				"image":                   schemaStringOptional(),
 				"enable_etcd_tls":         schemaBoolOptional(),
 				"enable_tls_auth":         schemaBoolOptional(),
-				"version":                 schemaStringOptional(),
 				"leader_election_timeout": schemaIntOptional(),
 				"heartbeat_interval":      schemaIntOptional(),
-				"image":                   schemaStringOptional(),
 				//"backups": {
 				//	Type:     schema.TypeList,
 				//	Optional: true,
