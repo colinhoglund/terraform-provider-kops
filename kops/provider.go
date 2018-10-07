@@ -10,6 +10,7 @@ import (
 	"k8s.io/kops/util/pkg/vfs"
 )
 
+// Provider exported for main package
 func Provider() terraform.ResourceProvider {
 	return &schema.Provider{
 		Schema: map[string]*schema.Schema{
@@ -33,7 +34,7 @@ func Provider() terraform.ResourceProvider {
 }
 
 const (
-	INVALID_STATE_ERROR = `Unable to read state store s3 bucket.
+	invalidStateError = `Unable to read state store s3 bucket.
 Please use a valid s3 bucket uri on state_store attribute or KOPS_STATE_STORE env var.
 A valid value follows the format s3://<bucket>.
 Trailing slash will be trimmed.`
@@ -47,7 +48,7 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	}
 
 	if !vfs.IsClusterReadable(basePath) {
-		return nil, field.Invalid(field.NewPath("State Store"), registryPath, INVALID_STATE_ERROR)
+		return nil, field.Invalid(field.NewPath("State Store"), registryPath, invalidStateError)
 	}
 
 	return vfsclientset.NewVFSClientset(basePath, true), nil
