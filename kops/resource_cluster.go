@@ -72,89 +72,89 @@ func setResourceData(d *schema.ResourceData, m interface{}) error {
 }
 
 func resourceDataClusterSpec(cluster *kopsapi.Cluster) []map[string]interface{} {
-	spec := make(map[string]interface{})
+	data := make(map[string]interface{})
 
-	spec["channel"] = cluster.Spec.Channel
-	spec["cloud_provider"] = cluster.Spec.CloudProvider
-	spec["cluster_dnsdomain"] = cluster.Spec.ClusterDNSDomain
-	spec["config_base"] = cluster.Spec.ConfigBase
-	spec["config_store"] = cluster.Spec.ConfigStore
-	spec["dnszone"] = cluster.Spec.DNSZone
-	spec["key_store"] = cluster.Spec.KeyStore
-	spec["kubernetes_version"] = cluster.Spec.KubernetesVersion
-	spec["master_internal_name"] = cluster.Spec.MasterInternalName
-	spec["master_public_name"] = cluster.Spec.MasterPublicName
-	spec["network_cidr"] = cluster.Spec.NetworkCIDR
-	spec["network_id"] = cluster.Spec.NetworkID
-	spec["non_masquerade_cidr"] = cluster.Spec.NonMasqueradeCIDR
-	spec["project"] = cluster.Spec.Project
-	spec["secret_store"] = cluster.Spec.SecretStore
-	spec["service_cluster_iprange"] = cluster.Spec.ServiceClusterIPRange
-	spec["sshkey_name"] = cluster.Spec.SSHKeyName
-	spec["subnet"] = resourceDataClusterSubnet(cluster.Spec.Subnets)
-	spec["topology"] = resourceDataClusterTopology(cluster.Spec.Topology)
-	spec["ssh_access"] = cluster.Spec.SSHAccess
-	spec["kubernetes_api_access"] = cluster.Spec.KubernetesAPIAccess
-	spec["additional_policies"] = *cluster.Spec.AdditionalPolicies
-	spec["etcd_cluster"] = resourceDataClusterEtcdCluster(cluster.Spec.EtcdClusters)
+	data["channel"] = cluster.Spec.Channel
+	data["cloud_provider"] = cluster.Spec.CloudProvider
+	data["cluster_dnsdomain"] = cluster.Spec.ClusterDNSDomain
+	data["config_base"] = cluster.Spec.ConfigBase
+	data["config_store"] = cluster.Spec.ConfigStore
+	data["dnszone"] = cluster.Spec.DNSZone
+	data["key_store"] = cluster.Spec.KeyStore
+	data["kubernetes_version"] = cluster.Spec.KubernetesVersion
+	data["master_internal_name"] = cluster.Spec.MasterInternalName
+	data["master_public_name"] = cluster.Spec.MasterPublicName
+	data["network_cidr"] = cluster.Spec.NetworkCIDR
+	data["network_id"] = cluster.Spec.NetworkID
+	data["non_masquerade_cidr"] = cluster.Spec.NonMasqueradeCIDR
+	data["project"] = cluster.Spec.Project
+	data["secret_store"] = cluster.Spec.SecretStore
+	data["service_cluster_iprange"] = cluster.Spec.ServiceClusterIPRange
+	data["sshkey_name"] = cluster.Spec.SSHKeyName
+	data["subnet"] = resourceDataClusterSubnet(cluster.Spec.Subnets)
+	data["topology"] = resourceDataClusterTopology(cluster.Spec.Topology)
+	data["ssh_access"] = cluster.Spec.SSHAccess
+	data["kubernetes_api_access"] = cluster.Spec.KubernetesAPIAccess
+	data["additional_policies"] = *cluster.Spec.AdditionalPolicies
+	data["etcd_cluster"] = resourceDataClusterEtcdCluster(cluster.Spec.EtcdClusters)
 
-	return []map[string]interface{}{spec}
+	return []map[string]interface{}{data}
 }
 
 func resourceDataClusterMetadata(cluster *kopsapi.Cluster) []map[string]interface{} {
-	meta := make(map[string]interface{})
+	data := make(map[string]interface{})
 
-	meta["name"] = cluster.ObjectMeta.Name
-	meta["creation_timestamp"] = cluster.ObjectMeta.CreationTimestamp.String()
+	data["name"] = cluster.ObjectMeta.Name
+	data["creation_timestamp"] = cluster.ObjectMeta.CreationTimestamp.String()
 
-	return []map[string]interface{}{meta}
+	return []map[string]interface{}{data}
 }
 
 func resourceDataClusterSubnet(subnets []kopsapi.ClusterSubnetSpec) []map[string]interface{} {
-	var ret []map[string]interface{}
+	var data []map[string]interface{}
 	for _, subnet := range subnets {
-		ret = append(ret, map[string]interface{}{
+		data = append(data, map[string]interface{}{
 			"name": subnet.Name,
 			"cidr": subnet.CIDR,
 			"zone": subnet.Zone,
 			"type": string(subnet.Type),
 		})
 	}
-	return ret
+	return data
 }
 
 func resourceDataClusterTopology(topology *kopsapi.TopologySpec) []map[string]interface{} {
-	ret := make(map[string]interface{})
+	data := make(map[string]interface{})
 
-	ret["masters"] = topology.Masters
-	ret["nodes"] = topology.Nodes
+	data["masters"] = topology.Masters
+	data["nodes"] = topology.Nodes
 	if topology.Bastion != nil {
-		ret["bastion"] = []map[string]interface{}{
+		data["bastion"] = []map[string]interface{}{
 			map[string]interface{}{
 				"bastion_public_name":  topology.Bastion.BastionPublicName,
 				"idle_timeout_seconds": topology.Bastion.IdleTimeoutSeconds,
 			},
 		}
 	}
-	ret["dns"] = []map[string]interface{}{
+	data["dns"] = []map[string]interface{}{
 		map[string]interface{}{
 			"type": topology.DNS.Type,
 		},
 	}
 
-	return []map[string]interface{}{ret}
+	return []map[string]interface{}{data}
 }
 
 func resourceDataClusterEtcdCluster(etcdClusters []*kopsapi.EtcdClusterSpec) []map[string]interface{} {
-	var ret []map[string]interface{}
+	var data []map[string]interface{}
 
 	for _, cluster := range etcdClusters {
-		cur := make(map[string]interface{})
+		cl := make(map[string]interface{})
 
-		cur["name"] = cluster.Name
+		cl["name"] = cluster.Name
 
 		//if cluster.Provider != nil {
-		//	cur["provider"] = cluster.Provider
+		//	cl["provider"] = cluster.Provider
 		//}
 
 		// build etcd_members
@@ -180,32 +180,32 @@ func resourceDataClusterEtcdCluster(etcdClusters []*kopsapi.EtcdClusterSpec) []m
 			}
 			members = append(members, mem)
 		}
-		cur["etcd_member"] = members
+		cl["etcd_member"] = members
 
-		cur["enable_etcd_tls"] = cluster.EnableEtcdTLS
-		cur["enable_tls_auth"] = cluster.EnableTLSAuth
-		cur["version"] = cluster.Version
+		cl["enable_etcd_tls"] = cluster.EnableEtcdTLS
+		cl["enable_tls_auth"] = cluster.EnableTLSAuth
+		cl["version"] = cluster.Version
 		if cluster.LeaderElectionTimeout != nil {
-			cur["leader_election_timeout"] = cluster.LeaderElectionTimeout
+			cl["leader_election_timeout"] = cluster.LeaderElectionTimeout
 		}
 		if cluster.HeartbeatInterval != nil {
-			cur["heartbeat_interval"] = cluster.HeartbeatInterval
+			cl["heartbeat_interval"] = cluster.HeartbeatInterval
 		}
-		cur["image"] = cluster.Image
-		//cur["backups"] = []map[string]interface{}{
+		cl["image"] = cluster.Image
+		//cl["backups"] = []map[string]interface{}{
 		//	map[string]interface{}{
 		//		"store": cluster.Backups.BackupStore,
 		//		"image": cluster.Backups.Image,
 		//	},
 		//}
-		//cur["manager"] = []map[string]interface{}{
+		//cl["manager"] = []map[string]interface{}{
 		//	map[string]interface{}{
 		//		"image": cluster.Manager.Image,
 		//	},
 		//}
 
-		ret = append(ret, cur)
+		data = append(data, cl)
 	}
 
-	return ret
+	return data
 }
