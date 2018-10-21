@@ -22,8 +22,8 @@ func Provider() terraform.ResourceProvider {
 			},
 		},
 		DataSourcesMap: map[string]*schema.Resource{
-			"kops_cluster": dataSourceCluster(),
-			//"kops_instance_group": dataSourceInstanceGroup(),
+			"kops_cluster":        dataSourceCluster(),
+			"kops_instance_group": dataSourceInstanceGroup(),
 		},
 		ResourcesMap: map[string]*schema.Resource{
 			"kops_cluster": resourceCluster(),
